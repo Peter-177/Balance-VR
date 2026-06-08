@@ -1,0 +1,188 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Open Sans", "Share Tech Mono", sans-serif;
+  --font-mono: "Courier New", monospace;
+  --animate-heartbeat: heartbeat 0.8s ease-in-out infinite;
+
+  @keyframes heartbeat {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.2); }
+  }
+}
+
+@layer base {
+  :root {
+    --bg-base:        #0b1120;
+    --bg-sidebar:     #081018;
+    --bg-header:      #0a1520;
+    --bg-card:        #0e1828;
+    --bg-card-inner:  #070f1e;
+    --bg-viewport:    #040810;
+
+    --border-primary: #1a2d4a;
+    --border-bright:  #2a4878;
+    --border-card:    #1e3050;
+    --border-subtle:  rgba(255,255,255,0.07);
+
+    --text-primary:   #ffffff;
+    --text-secondary: #a0b8d8;
+    --text-dim:       #8fa4c0;
+
+    --green-dot:      #22dd66;
+  }
+
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  html, body {
+    height: 100%;
+    background-color: var(--bg-base);
+    color: var(--text-primary);
+    font-family: "Open Sans", "Share Tech Mono", sans-serif;
+    font-size: 15px;
+    -webkit-font-smoothing: antialiased;
+  }
+}
+
+@layer components {
+
+  .vr-btn {
+    position: relative;
+    width: 100%;
+    padding: 9px 14px;
+    border: 1px solid rgba(255,255,255,0.10);
+    border-radius: 6px;
+    color: #ffffff;
+    font-family: "Open Sans", sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: filter 0.15s ease, transform 0.1s ease, box-shadow 0.15s ease;
+    overflow: hidden;
+    outline: none;
+  }
+  .vr-btn::after {
+    content: "";
+    position: absolute;
+    inset: 3px;
+    border-radius: 4px;
+    border: 1px solid rgba(255,255,255,0.12);
+    pointer-events: none;
+  }
+  .vr-btn:hover  { filter: brightness(1.2); box-shadow: 0 0 12px rgba(255,255,255,0.08); }
+  .vr-btn:active { filter: brightness(0.85); transform: scale(0.97); }
+
+  .btn-green {
+    background: url('/icons/startBtn.png') no-repeat center;
+    background-size: 100% 100%;
+    border-color: transparent;
+    text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+  }
+
+  .btn-red {
+    background: url('/icons/EndBtn.png') no-repeat center;
+    background-size: 100% 100%;
+    border-color: transparent;
+    text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+  }
+
+  .btn-level-default {
+    background: url('/icons/lvlBtn.png') no-repeat center;
+    background-size: 100% 100%;
+    border-color: transparent;
+    font-size: 12px;
+    padding: 8px 12px;
+  }
+
+  .btn-level-active {
+    background: url('/icons/Dblue.png') no-repeat center;
+    background-size: 100% 100%;
+    border-color: transparent;
+    font-size: 12px;
+    padding: 8px 12px;
+    box-shadow: 0 0 8px rgba(42,72,180,0.3);
+  }
+
+  .btn-indigo {
+    background: url('/icons/lvlBtn.png') no-repeat center;
+    background-size: 100% 100%;
+    border-color: transparent;
+  }
+
+  .btn-blue-md {
+    background: url('/icons/Dblue.png') no-repeat center;
+    background-size: 100% 100%;
+    border-color: transparent;
+  }
+
+  .vr-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-card);
+    border-radius: 4px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .vr-card-title {
+    text-align: center;
+    font-family: "Open Sans", sans-serif;
+    font-size: 17px;
+    font-weight: 600;
+    color: var(--text-primary);
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--border-card);
+    background: linear-gradient(180deg, #121e34 0%, #0a1525 100%);
+    letter-spacing: 0.03em;
+  }
+
+  .vital-row {
+    display: flex;
+    align-items: center;
+    border: 1px solid var(--border-card);
+    border-radius: 4px;
+    background: var(--bg-card-inner);
+    overflow: hidden;
+  }
+  .vital-label-cell {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex: 1;
+    padding: 10px 14px;
+    border-right: 1px solid var(--border-card);
+    font-family: "Open Sans", sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--text-primary);
+  }
+  .vital-value-cell {
+    padding: 10px 14px;
+    font-family: "Courier New", monospace;
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text-primary);
+    min-width: 100px;
+    text-align: center;
+  }
+
+  .bottom-action-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    width: 140px;
+    height: 38px;
+    padding: 0 18px;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: none;
+  }
+}

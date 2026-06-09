@@ -17,9 +17,9 @@ export function Sidebar({ selectedLevel, onSelectLevel, onStartSession, onEndSes
       }}
     >
       <button
-        className="absolute left-[30px] top-[25px] w-[260px] h-[50px] vr-btn btn-green text-[15px] opacity-50 cursor-not-allowed"
+        className="absolute left-[30px] top-[25px] w-[260px] h-[50px] vr-btn btn-green text-[15px]"
         onClick={onStartSession}
-        disabled
+        
       >
         START TRAINING
       </button>

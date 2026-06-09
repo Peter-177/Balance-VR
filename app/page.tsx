@@ -19,7 +19,6 @@ export default function App() {
   const [selectedLevel, setSelectedLevel] = useState(1);
   const [exposureActive] = useState(true);
   const [showGraph, setShowGraph] = useState(false);
-  const [anxietyLevel] = useState(4);
 
   const { send } = useWebSocket();
   const {

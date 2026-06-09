@@ -19,6 +19,8 @@ export default function App() {
   const [selectedLevel, setSelectedLevel] = useState(1);
   const [exposureActive] = useState(true);
   const [showGraph, setShowGraph] = useState(false);
+  const [chartHistory, setChartHistory] = useState<{ test: number; anxiety: number }[]>([{ test: 1, anxiety: 1 }]);
+  const [activeChartButton, setActiveChartButton] = useState<number | null>(null);
 
   const { send } = useWebSocket();
   const {
@@ -66,6 +68,14 @@ export default function App() {
   function handleStartTest() {
     console.log("Starting anxiety test");
     startAnxietyTest();
+  }
+
+  function handleUpdateChartHistory(newHistory: { test: number; anxiety: number }[]) {
+    setChartHistory(newHistory);
+  }
+
+  function handleUpdateActiveChartButton(buttonValue: number | null) {
+    setActiveChartButton(buttonValue);
   }
 
   async function handleSubmitResult(anxietyValue: number) {
@@ -129,7 +139,13 @@ export default function App() {
             </div>
 
             <div className="flex-1 p-6 overflow-hidden bg-[#e5e7eb]">
-              <SudsChart onSubmitResult={handleSubmitResult} />
+              <SudsChart 
+                onSubmitResult={handleSubmitResult}
+                history={chartHistory}
+                activeButton={activeChartButton}
+                onUpdateHistory={handleUpdateChartHistory}
+                onUpdateActiveButton={handleUpdateActiveChartButton}
+              />
             </div>
           </div>
         )}

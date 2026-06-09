@@ -19,13 +19,14 @@ export function BottomBar() {
       {actions.map(a => (
         <button
           key={a.label}
-          className="vr-btn btn-indigo flex items-center justify-center gap-3 font-semibold text-[14px] text-white tracking-wide"
+          className="vr-btn btn-indigo flex items-center justify-center gap-3 font-semibold text-[14px] text-white tracking-wide opacity-50 cursor-not-allowed"
           style={{
             width: a.width,
             height: '55px',
             padding: 0,
             textTransform: 'none',
           }}
+          disabled
         >
           <img
             src={a.icon}

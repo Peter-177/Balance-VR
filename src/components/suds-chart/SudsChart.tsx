@@ -18,11 +18,41 @@ type HistoryEntry = {
 
 interface SudsChartProps {
   onSubmitResult?: (anxietyValue: number) => void;
+  history?: { test: number; anxiety: number }[];
+  activeButton?: number | null;
+  onUpdateHistory?: (history: { test: number; anxiety: number }[]) => void;
+  onUpdateActiveButton?: (buttonValue: number | null) => void;
 }
 
-export default function SudsChart({ onSubmitResult }: SudsChartProps) {
-  const [history, setHistory] = useState<HistoryEntry[]>([{ test: 1, anxiety: 1 }]);
-  const [activeButton, setActiveButton] = useState<number | null>(null);
+export default function SudsChart({ 
+  onSubmitResult, 
+  history: propsHistory, 
+  activeButton: propsActiveButton,
+  onUpdateHistory,
+  onUpdateActiveButton
+}: SudsChartProps) {
+  const [localHistory, setLocalHistory] = useState<HistoryEntry[]>([{ test: 1, anxiety: 1 }]);
+  const [localActiveButton, setLocalActiveButton] = useState<number | null>(null);
+
+  // Use props if provided (parent-managed state), otherwise use local state
+  const history = propsHistory !== undefined ? propsHistory : localHistory;
+  const activeButton = propsActiveButton !== undefined ? propsActiveButton : localActiveButton;
+
+  const setHistory = (newHistory: HistoryEntry[]) => {
+    if (onUpdateHistory) {
+      onUpdateHistory(newHistory);
+    } else {
+      setLocalHistory(newHistory);
+    }
+  };
+
+  const setActiveButton = (value: number | null) => {
+    if (onUpdateActiveButton) {
+      onUpdateActiveButton(value);
+    } else {
+      setLocalActiveButton(value);
+    }
+  };
 
   const buttonsList = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 

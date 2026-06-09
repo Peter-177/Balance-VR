@@ -67,7 +67,7 @@ export function useSession(send: SendFn) {
     }
   }, []);
 
-   const startSession = useCallback(async () => {
+  const startSession = useCallback(async () => {
     const now = new Date();
     const iso = now.toISOString();
     startTimeRef.current = iso;
@@ -77,10 +77,8 @@ export function useSession(send: SendFn) {
     setAttempts(0);
     setSessionError(null);
     setIsLoadingSession(true);
-
     setEndError(null);
 
-    // Reset polling state for new session
     lastPolledResultRef.current = null;
 
     timerRef.current = setInterval(() => setSeconds((s) => s + 1), 1000);
@@ -88,15 +86,18 @@ export function useSession(send: SendFn) {
     try {
       const apiUrl = `${REST_BASE}/demo/session/`;
       console.log("==> Sending request to API:", apiUrl);
+      console.log("startTime iso:", iso);
 
       const response = await fetch(apiUrl, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ startTime: iso }),
+        body: JSON.stringify({ startTime: iso, createdAt: iso }),
       });
+
       if (!response.ok) {
         throw new Error("Failed to create session");
       }
+
       const data = await response.json();
       console.log("==> Received response from API:", data);
 
@@ -104,13 +105,18 @@ export function useSession(send: SendFn) {
       const hh = serverDate.getHours().toString().padStart(2, "0");
       const mm = serverDate.getMinutes().toString().padStart(2, "0");
       setSessionStart(`${hh}:${mm}`);
+
+      send("create_session", {
+        startTime: iso,
+        createdAt: iso,
+      });
     } catch (err) {
       setSessionError(err instanceof Error ? err.message : "Error creating session");
       setSessionStart("--:--");
     } finally {
       setIsLoadingSession(false);
     }
-  }, []);
+  }, [send]);
 
   const endSession = useCallback(async () => {
     if (timerRef.current) {
@@ -136,9 +142,11 @@ export function useSession(send: SendFn) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ endTime }),
       });
+
       if (!response.ok) {
         throw new Error("Failed to end session");
       }
+
       const data = await response.json();
       console.log("==> Received response from API:", data);
     } catch (err) {
@@ -164,7 +172,7 @@ export function useSession(send: SendFn) {
     try {
       const apiUrl = `${REST_BASE}/demo/anxiety-test`;
       const requestBody = { show: true };
-      
+
       console.log("Starting anxiety test");
       console.log("Sending to /demo/anxiety-test:", requestBody);
 
@@ -182,7 +190,6 @@ export function useSession(send: SendFn) {
       console.log("Anxiety test response status:", response.status);
       console.log("Anxiety test response body:", data);
 
-      // Send the response to backend
       send("anxiety_test_response", data);
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : "Error starting anxiety test";
@@ -227,7 +234,6 @@ export function useSession(send: SendFn) {
     [attempts, send]
   );
 
-  // Poll for result updates from PUT /demo/test endpoint
   useEffect(() => {
     if (!isRunning) return;
 
@@ -244,7 +250,6 @@ export function useSession(send: SendFn) {
         const data = await response.json();
         const newResult = data.result !== undefined ? data.result : data.lastResult;
 
-        // Only update if we have a valid result and it's different from the last polled result
         if (newResult !== null && newResult !== undefined && newResult !== lastPolledResultRef.current) {
           lastPolledResultRef.current = newResult;
 
@@ -255,10 +260,8 @@ export function useSession(send: SendFn) {
           setLastResult(newResult);
           setLastResultTime(`${hh}:${mm}`);
 
-          // Increment attempts since we got a new result
           setAttempts((prevAttempts) => {
             const nextAttempts = prevAttempts + 1;
-            // Send update to backend with the new attempts count
             send("result_update", {
               result: newResult,
               attempts: nextAttempts,
@@ -285,7 +288,6 @@ export function useSession(send: SendFn) {
   return {
     isRunning,
     sessionStart,
-
     seconds,
     attempts,
     lastResult,

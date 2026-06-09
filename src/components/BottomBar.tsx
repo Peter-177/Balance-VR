@@ -25,6 +25,7 @@ export function BottomBar() {
             height: '55px',
             padding: 0,
             textTransform: 'none',
+            pointerEvents: 'none',
           }}
           disabled
         >

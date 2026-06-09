@@ -5,8 +5,14 @@ import { io, Socket } from "socket.io-client";
 
 const SERVER_URL = "wss://vr-demo-api-production.up.railway.app";
 
-export function useWebSocket() {
+type WebSocketOptions = {
+  onSessionCreated?: () => void;
+};
+
+export function useWebSocket(options?: WebSocketOptions) {
   const socketRef = useRef<Socket | null>(null);
+  const optionsRef = useRef(options);
+  optionsRef.current = options;
 
   useEffect(() => {
     const socket = io(SERVER_URL, {
@@ -26,7 +32,27 @@ export function useWebSocket() {
       console.warn("[Socket.IO] Connection error:", err.message);
     });
 
+    // لما الطرف التاني يبعت create_session
+    socket.on("create_session", () => {
+      console.log("[Socket.IO] create_session received from backend");
+
+      // بناخد الـ time من الـ frontend في اللحظة دي
+      const now = new Date();
+      const hh = now.getHours().toString().padStart(2, "0");
+      const mm = now.getMinutes().toString().padStart(2, "0");
+      console.log("[Socket.IO] Frontend time:", `${hh}:${mm}`);
+
+      // بنبعت الـ callback للـ component عشان يعدل الـ dashboard
+      optionsRef.current?.onSessionCreated?.();
+    });
+
+    let updateTestLogged = false;
+
     socket.onAny((eventName, ...args) => {
+      if (eventName === "update_test") {
+        if (updateTestLogged) return;
+        updateTestLogged = true;
+      }
       console.log("[Socket.IO] Event received:", eventName, args);
     });
 

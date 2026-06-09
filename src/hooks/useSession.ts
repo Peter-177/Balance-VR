@@ -31,16 +31,49 @@ export function useSession(send: SendFn) {
   const pollingIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const lastPolledResultRef = useRef<number | null>(null);
 
+  // ✅ جديد — بتتستدعي من الـ button في الـ UI
+  // بتحط isLoadingSession = true وبتستنى الـ socket event يجي من الـ backend
+  const requestSession = useCallback(() => {
+    setIsLoadingSession(true);
+    setSessionError(null);
+    console.log("[Session] Waiting for backend to trigger create_session...");
+  }, []);
+
+  // ✅ بتتستدعي لما الـ socket يسمع create_session من الـ backend
+  // بتاخد الـ time من الـ frontend في اللحظة دي
+  const startSession = useCallback(() => {
+    const now = new Date();
+    const iso = now.toISOString();
+    startTimeRef.current = iso;
+
+    const hh = now.getHours().toString().padStart(2, "0");
+    const mm = now.getMinutes().toString().padStart(2, "0");
+
+    setIsRunning(true);
+    setSeconds(0);
+    setAttempts(0);
+    setSessionError(null);
+    setIsLoadingSession(false); // ✅ الـ socket وصل — خلصنا الـ loading
+    setEndError(null);
+    setSessionStart(`${hh}:${mm}`);
+
+    lastPolledResultRef.current = null;
+
+    timerRef.current = setInterval(() => setSeconds((s) => s + 1), 1000);
+
+    console.log("[Session] Started at:", `${hh}:${mm}`, "ISO:", iso);
+  }, []);
+
   const selectLevel = useCallback(async (levelNumber: number) => {
-    const levelName = `START LEVEL ${String(levelNumber).padStart(2, '0')}`;
-    
+    const levelName = `START LEVEL ${String(levelNumber).padStart(2, "0")}`;
+
     setIsLoadingLevelSelect(true);
     setLevelSelectError(null);
 
     try {
       const apiUrl = `${REST_BASE}/demo/test`;
       const requestBody = { name: levelName };
-      
+
       console.log("Level selected:", levelNumber);
       console.log("Sending to /demo/test:", requestBody);
 
@@ -58,7 +91,8 @@ export function useSession(send: SendFn) {
       console.log("Level selection response status:", response.status);
       console.log("Level selection response body:", data);
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : "Error selecting level";
+      const errorMessage =
+        err instanceof Error ? err.message : "Error selecting level";
       console.error("[REST] Error selecting level:", errorMessage);
       console.error("Error details:", err);
       setLevelSelectError(errorMessage);
@@ -66,57 +100,6 @@ export function useSession(send: SendFn) {
       setIsLoadingLevelSelect(false);
     }
   }, []);
-
-  const startSession = useCallback(async () => {
-    const now = new Date();
-    const iso = now.toISOString();
-    startTimeRef.current = iso;
-
-    setIsRunning(true);
-    setSeconds(0);
-    setAttempts(0);
-    setSessionError(null);
-    setIsLoadingSession(true);
-    setEndError(null);
-
-    lastPolledResultRef.current = null;
-
-    timerRef.current = setInterval(() => setSeconds((s) => s + 1), 1000);
-
-    try {
-      const apiUrl = `${REST_BASE}/demo/session/`;
-      console.log("==> Sending request to API:", apiUrl);
-      console.log("startTime iso:", iso);
-
-      const response = await fetch(apiUrl, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ startTime: iso, createdAt: iso }),
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to create session");
-      }
-
-      const data = await response.json();
-      console.log("==> Received response from API:", data);
-
-      const serverDate = new Date(data.createdAt || data.startTime);
-      const hh = serverDate.getHours().toString().padStart(2, "0");
-      const mm = serverDate.getMinutes().toString().padStart(2, "0");
-      setSessionStart(`${hh}:${mm}`);
-
-      send("create_session", {
-        startTime: iso,
-        createdAt: iso,
-      });
-    } catch (err) {
-      setSessionError(err instanceof Error ? err.message : "Error creating session");
-      setSessionStart("--:--");
-    } finally {
-      setIsLoadingSession(false);
-    }
-  }, [send]);
 
   const endSession = useCallback(async () => {
     if (timerRef.current) {
@@ -150,7 +133,9 @@ export function useSession(send: SendFn) {
       const data = await response.json();
       console.log("==> Received response from API:", data);
     } catch (err) {
-      setEndError(err instanceof Error ? err.message : "Error ending session");
+      setEndError(
+        err instanceof Error ? err.message : "Error ending session"
+      );
     } finally {
       setIsLoadingEnd(false);
       startTimeRef.current = null;
@@ -192,7 +177,8 @@ export function useSession(send: SendFn) {
 
       send("anxiety_test_response", data);
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : "Error starting anxiety test";
+      const errorMessage =
+        err instanceof Error ? err.message : "Error starting anxiety test";
       console.error("[REST] Error during anxiety test:", errorMessage);
       console.error("Error details:", err);
       setAnxietyTestError(errorMessage);
@@ -248,14 +234,20 @@ export function useSession(send: SendFn) {
         if (!response.ok) return;
 
         const data = await response.json();
-        const newResult = data.result !== undefined ? data.result : data.lastResult;
+        const newResult =
+          data.result !== undefined ? data.result : data.lastResult;
 
-        if (newResult !== null && newResult !== undefined && newResult !== lastPolledResultRef.current) {
+        if (
+          newResult !== null &&
+          newResult !== undefined &&
+          newResult !== lastPolledResultRef.current
+        ) {
           lastPolledResultRef.current = newResult;
 
-          const now = new Date();
-          const hh = now.getHours().toString().padStart(2, "0");
-          const mm = now.getMinutes().toString().padStart(2, "0");
+          // Extract time from the API response if available, else fallback
+          const resultDate = data.createdAt ? new Date(data.createdAt) : new Date();
+          const hh = resultDate.getHours().toString().padStart(2, "0");
+          const mm = resultDate.getMinutes().toString().padStart(2, "0");
 
           setLastResult(newResult);
           setLastResultTime(`${hh}:${mm}`);
@@ -265,7 +257,7 @@ export function useSession(send: SendFn) {
             send("result_update", {
               result: newResult,
               attempts: nextAttempts,
-              createdAt: now.toISOString(),
+              createdAt: data.createdAt || resultDate.toISOString(),
             });
             return nextAttempts;
           });
@@ -292,7 +284,8 @@ export function useSession(send: SendFn) {
     attempts,
     lastResult,
     lastResultTime,
-    startSession,
+    requestSession, // ✅ جديد — للـ button في الـ UI
+    startSession,   // ✅ للـ socket event من الـ backend
     endSession,
     selectLevel,
     startAnxietyTest,

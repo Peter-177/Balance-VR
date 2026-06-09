@@ -1,35 +1,49 @@
 "use client";
 
-import { useState } from 'react';
-import { Header } from '@/components/Header';
-import { Sidebar } from '@/components/Sidebar';
-import { ViewportPanel } from '@/components/ViewportPanel';
-import { VitalsCard } from '@/components/cards/VitalsCard';
-import { AnxietyCard } from '@/components/cards/AnxietyCard';
-import { SessionCard } from '@/components/cards/SessionCard';
-import { BottomBar } from '@/components/BottomBar';
-import { ScaleContainer } from '@/components/ScaleContainer';
-import SudsChart from '@/components/suds-chart/SudsChart';
-import { useWebSocket } from '@/hooks/useWebSocket';
-import { useSession } from '@/hooks/useSession';
+import { useRef, useState } from "react";
+import { Header } from "@/components/Header";
+import { Sidebar } from "@/components/Sidebar";
+import { ViewportPanel } from "@/components/ViewportPanel";
+import { VitalsCard } from "@/components/cards/VitalsCard";
+import { AnxietyCard } from "@/components/cards/AnxietyCard";
+import { SessionCard } from "@/components/cards/SessionCard";
+import { BottomBar } from "@/components/BottomBar";
+import { ScaleContainer } from "@/components/ScaleContainer";
+import SudsChart from "@/components/suds-chart/SudsChart";
+import { useWebSocket } from "@/hooks/useWebSocket";
+import { useSession } from "@/hooks/useSession";
 
 export default function App() {
-  const [patientId] = useState('ID-201');
-  const [patientName] = useState('Peter');
+  const [patientId] = useState("ID-201");
+  const [patientName] = useState("Peter");
   const [selectedLevel, setSelectedLevel] = useState(1);
   const [exposureActive] = useState(true);
   const [showGraph, setShowGraph] = useState(false);
-  const [chartHistory, setChartHistory] = useState<{ test: number; anxiety: number }[]>([{ test: 1, anxiety: 1 }]);
-  const [activeChartButton, setActiveChartButton] = useState<number | null>(null);
+  const [chartHistory, setChartHistory] = useState<
+    { test: number; anxiety: number }[]
+  >([{ test: 1, anxiety: 1 }]);
+  const [activeChartButton, setActiveChartButton] = useState<number | null>(
+    null
+  );
 
-  const { send } = useWebSocket();
+  // ✅ الـ ref بيحمل startSession عشان useWebSocket يقدر يستدعيها
+  // من غير stale closure لما الـ socket event يوصل
+  const startSessionRef = useRef<() => void>(() => {});
+
+  const { send } = useWebSocket({
+    // ✅ لما الـ backend يبعت create_session، بنستدعي startSession
+    // اللي بتاخد الـ time من الـ frontend في نفس اللحظة
+    onSessionCreated: () => startSessionRef.current(),
+  });
+
   const {
     sessionStart,
     seconds,
     attempts,
     lastResult,
     lastResultTime,
-    startSession,
+    requestSession, // ✅ جديد — للـ button (بتحط loading بس)
+    startSession,   // ✅ للـ socket event (بتبدأ الـ session فعلاً)
     endSession,
     selectLevel,
     startAnxietyTest,
@@ -42,10 +56,14 @@ export default function App() {
     anxietyTestError,
   } = useSession(send);
 
+  // ✅ نربط startSession بالـ ref عشان الـ socket callback يشوف النسخة الأحدث
+  startSessionRef.current = startSession;
+
   const startLevel = selectedLevel;
 
+  // ✅ الـ button في الـ Sidebar — بيحط loading ويستنى الـ backend يبعت create_session
   function handleStartSession() {
-    startSession();
+    requestSession();
   }
 
   function handleEndSession() {
@@ -70,7 +88,9 @@ export default function App() {
     startAnxietyTest();
   }
 
-  function handleUpdateChartHistory(newHistory: { test: number; anxiety: number }[]) {
+  function handleUpdateChartHistory(
+    newHistory: { test: number; anxiety: number }[]
+  ) {
     setChartHistory(newHistory);
   }
 
@@ -139,7 +159,7 @@ export default function App() {
             </div>
 
             <div className="flex-1 p-6 overflow-hidden bg-[#e5e7eb]">
-              <SudsChart 
+              <SudsChart
                 onSubmitResult={handleSubmitResult}
                 history={chartHistory}
                 activeButton={activeChartButton}
@@ -153,3 +173,4 @@ export default function App() {
     </ScaleContainer>
   );
 }
+

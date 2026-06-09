@@ -17,9 +17,10 @@ export function Sidebar({ selectedLevel, onSelectLevel, onStartSession, onEndSes
       }}
     >
       <button
-        className="absolute left-[30px] top-[25px] w-[260px] h-[50px] vr-btn btn-green text-[15px]"
+        className="absolute left-[30px] top-[25px] w-[260px] h-[50px] vr-btn btn-green text-[15px] opacity-50 cursor-not-allowed"
+        style={{ pointerEvents: 'none' }}
         onClick={onStartSession}
-        
+        disabled
       >
         START TRAINING
       </button>
@@ -45,7 +46,12 @@ export function Sidebar({ selectedLevel, onSelectLevel, onStartSession, onEndSes
             <button
               key={n}
               className={`vr-btn ${selectedLevel === n ? 'btn-level-active' : 'btn-level-default'} ${n >= 4 ? 'opacity-50 cursor-not-allowed' : ''}`}
-              style={{ width: '255px', height: '42px', padding: 0 }}
+              style={{
+                width: '255px',
+                height: '42px',
+                padding: 0,
+                pointerEvents: n >= 4 ? 'none' : 'auto'
+              }}
               onClick={() => onSelectLevel(n)}
               disabled={n >= 4}
             >

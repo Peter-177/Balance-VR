@@ -1,10 +1,10 @@
 import { useState, useEffect } from "react";
 
 interface VitalsCardProps {
-  anxietyLevel: number;
+  selectedLevel: number;
 }
 
-export function VitalsCard({anxietyLevel }: VitalsCardProps) {
+export function VitalsCard({ selectedLevel }: VitalsCardProps) {
   const [bpm, setBpm] = useState(100);
 
   useEffect(() => {
@@ -75,7 +75,7 @@ export function VitalsCard({anxietyLevel }: VitalsCardProps) {
             className="px-6 font-bold text-white text-[17px] text-center min-w-[140px] tracking-wide"
             style={{ fontFamily: '"Share Tech Mono", monospace' }}
           >
-            Level {anxietyLevel.toString().padStart(2, '0')}
+            Level {selectedLevel.toString().padStart(2, '0')}
           </div>
         </div>
       </div>

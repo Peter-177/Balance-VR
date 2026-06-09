@@ -57,7 +57,7 @@ export function SessionCard({
             </span>
           </div>
           <div className="flex justify-between items-center">
-            <span className="text-[#a0b8d8]">Starting Level</span>
+            <span className="text-[#a0b8d8]">Start Level</span>
             <span className="text-white font-bold text-right text-[14px]">{String(startLevel).padStart(2, '0')}</span>
           </div>
           <div className="flex justify-between items-center">

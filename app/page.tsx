@@ -87,7 +87,7 @@ export default function App() {
 
         <ViewportPanel exposureActive={exposureActive} />
 
-        <VitalsCard anxietyLevel={anxietyLevel} />
+        <VitalsCard selectedLevel={selectedLevel} />
 
         <AnxietyCard
           lastResult={lastResult}

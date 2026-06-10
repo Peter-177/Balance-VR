@@ -230,6 +230,10 @@ export function useSession(send: SendFn) {
   );
 
   useEffect(() => {
+    startSession();
+  }, [startSession]);
+
+  useEffect(() => {
     if (!isRunning) return;
 
     const pollForResults = async () => {

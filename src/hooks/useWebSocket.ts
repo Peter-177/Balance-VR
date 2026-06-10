@@ -53,7 +53,7 @@ export function useWebSocket(options?: WebSocketOptions) {
         if (updateTestLogged) return;
         updateTestLogged = true;
       }
-      console.log("[Socket.IO] Event received:", eventName, args);
+      // console.log("[Socket.IO] Event received:", eventName, args); // 🔇 صمتناها عشان الـ Backend بيبعتها كتير
     });
 
     return () => {

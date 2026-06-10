@@ -30,17 +30,22 @@ export function useSession(send: SendFn) {
   const testCreatedAtRef = useRef<string | null>(null);
   const pollingIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const lastPolledResultRef = useRef<number | null>(null);
+  const isRunningRef = useRef(false);
+  const levelSelectInFlightRef = useRef(false);
 
-  // ✅ جديد — بتتستدعي من الـ button في الـ UI
-  // بتحط isLoadingSession = true وبتستنى الـ socket event يجي من الـ backend
   const requestSession = useCallback(() => {
     setIsLoadingSession(true);
     setSessionError(null);
     console.log("[Session] Waiting for backend to trigger create_session...");
   }, []);
 
- 
   const startSession = useCallback(() => {
+    if (isRunningRef.current) {
+      console.log("[Session] Already running — ignoring duplicate create_session");
+      return;
+    }
+    isRunningRef.current = true;
+
     const now = new Date();
     const iso = now.toISOString();
     startTimeRef.current = iso;
@@ -52,7 +57,7 @@ export function useSession(send: SendFn) {
     setSeconds(0);
     setAttempts(0);
     setSessionError(null);
-    setIsLoadingSession(false); 
+    setIsLoadingSession(false);
     setEndError(null);
     setSessionStart(`${hh}:${mm}`);
 
@@ -64,6 +69,12 @@ export function useSession(send: SendFn) {
   }, []);
 
   const selectLevel = useCallback(async (levelNumber: number) => {
+    if (levelSelectInFlightRef.current) {
+      console.log("[Level Select] Request already in flight — skipping");
+      return;
+    }
+    levelSelectInFlightRef.current = true;
+
     const levelName = `START LEVEL ${String(levelNumber).padStart(2, "0")}`;
 
     setIsLoadingLevelSelect(true);
@@ -90,14 +101,16 @@ export function useSession(send: SendFn) {
       const errorMessage =
         err instanceof Error ? err.message : "Error selecting level";
       console.error("[REST] Error selecting level:", errorMessage);
-      console.error("Error details:", err);
       setLevelSelectError(errorMessage);
     } finally {
+      levelSelectInFlightRef.current = false;
       setIsLoadingLevelSelect(false);
     }
   }, []);
 
   const endSession = useCallback(async () => {
+    isRunningRef.current = false;
+
     if (timerRef.current) {
       clearInterval(timerRef.current);
       timerRef.current = null;
@@ -240,7 +253,6 @@ export function useSession(send: SendFn) {
         ) {
           lastPolledResultRef.current = newResult;
 
-          // Extract time from the API response if available, else fallback
           const resultDate = data.createdAt ? new Date(data.createdAt) : new Date();
           const hh = resultDate.getHours().toString().padStart(2, "0");
           const mm = resultDate.getMinutes().toString().padStart(2, "0");
@@ -280,8 +292,8 @@ export function useSession(send: SendFn) {
     attempts,
     lastResult,
     lastResultTime,
-    requestSession, // ✅ جديد — للـ button في الـ UI
-    startSession,   // ✅ للـ socket event من الـ backend
+    requestSession, 
+    startSession,   
     endSession,
     selectLevel,
     startAnxietyTest,

@@ -85,7 +85,7 @@ export function useSession(send: SendFn) {
         throw new Error(`Failed to select level: ${response.status}`);
       }
 
-      const data = await response.json();
+      await response.json();
     } catch (err) {
       const errorMessage =
         err instanceof Error ? err.message : "Error selecting level";

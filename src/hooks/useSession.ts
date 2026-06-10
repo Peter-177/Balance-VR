@@ -39,8 +39,7 @@ export function useSession(send: SendFn) {
     console.log("[Session] Waiting for backend to trigger create_session...");
   }, []);
 
-  // ✅ بتتستدعي لما الـ socket يسمع create_session من الـ backend
-  // بتاخد الـ time من الـ frontend في اللحظة دي
+ 
   const startSession = useCallback(() => {
     const now = new Date();
     const iso = now.toISOString();
@@ -53,7 +52,7 @@ export function useSession(send: SendFn) {
     setSeconds(0);
     setAttempts(0);
     setSessionError(null);
-    setIsLoadingSession(false); // ✅ الـ socket وصل — خلصنا الـ loading
+    setIsLoadingSession(false); 
     setEndError(null);
     setSessionStart(`${hh}:${mm}`);
 
@@ -74,8 +73,7 @@ export function useSession(send: SendFn) {
       const apiUrl = `${REST_BASE}/demo/test`;
       const requestBody = { name: levelName };
 
-      console.log("Level selected:", levelNumber);
-      console.log("Sending to /demo/test:", requestBody);
+      console.log(`[Level Select] Requesting level ${levelNumber}...`);
 
       const response = await fetch(apiUrl, {
         method: "POST",
@@ -88,8 +86,6 @@ export function useSession(send: SendFn) {
       }
 
       const data = await response.json();
-      console.log("Level selection response status:", response.status);
-      console.log("Level selection response body:", data);
     } catch (err) {
       const errorMessage =
         err instanceof Error ? err.message : "Error selecting level";

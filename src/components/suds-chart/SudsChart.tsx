@@ -31,10 +31,9 @@ export default function SudsChart({
   onUpdateHistory,
   onUpdateActiveButton
 }: SudsChartProps) {
-  const [localHistory, setLocalHistory] = useState<HistoryEntry[]>([{ test: 1, anxiety: 1 }]);
+  const [localHistory, setLocalHistory] = useState<HistoryEntry[]>([]);
   const [localActiveButton, setLocalActiveButton] = useState<number | null>(null);
 
-  // Use props if provided (parent-managed state), otherwise use local state
   const history = propsHistory !== undefined ? propsHistory : localHistory;
   const activeButton = propsActiveButton !== undefined ? propsActiveButton : localActiveButton;
 
@@ -57,17 +56,19 @@ export default function SudsChart({
   const buttonsList = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
   function handleButtonClick(anxietyValue: number) {
-    const nextTestNumber = history.length + 1;
-    const newEntry = {
-      test: nextTestNumber,
-      anxiety: anxietyValue,
-    };
+    let updatedHistory: HistoryEntry[];
 
-    const updatedHistory = [];
-    for (let i = 0; i < history.length; i++) {
-      updatedHistory.push(history[i]);
+    if (history.length === 0) {
+      updatedHistory = [
+        { test: 1, anxiety: 1 },
+        { test: 2, anxiety: anxietyValue },
+      ];
+    } else {
+      updatedHistory = [
+        ...history,
+        { test: history.length + 1, anxiety: anxietyValue },
+      ];
     }
-    updatedHistory.push(newEntry);
 
     setHistory(updatedHistory);
     setActiveButton(anxietyValue);
@@ -100,7 +101,10 @@ export default function SudsChart({
       <div className="w-full flex-grow min-h-0">
         <ResponsiveContainer width="100%" height="100%">
           <LineChart
-            data={history}
+            data={history.length > 0 ? history : [
+              { test: 1, anxiety: null as unknown as number },
+              { test: 10, anxiety: null as unknown as number }
+            ]}
             margin={{ top: 40, right: 60, left: 60, bottom: 40 }}
           >
             <CartesianGrid stroke="#d1d5db" strokeDasharray="3 3" vertical={true} horizontal={true} />

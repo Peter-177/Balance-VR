@@ -21,18 +21,15 @@ export default function App() {
   const [showGraph, setShowGraph] = useState(false);
   const [chartHistory, setChartHistory] = useState<
     { test: number; anxiety: number }[]
-  >([{ test: 1, anxiety: 1 }]);
+  >([]);
   const [activeChartButton, setActiveChartButton] = useState<number | null>(
     null
   );
 
-  // ✅ الـ ref بيحمل startSession عشان useWebSocket يقدر يستدعيها
-  // من غير stale closure لما الـ socket event يوصل
   const startSessionRef = useRef<() => void>(() => {});
 
   const { send } = useWebSocket({
-    // ✅ لما الـ backend يبعت create_session، بنستدعي startSession
-    // اللي بتاخد الـ time من الـ frontend في نفس اللحظة
+
     onSessionCreated: () => startSessionRef.current(),
   });
 
@@ -42,8 +39,7 @@ export default function App() {
     attempts,
     lastResult,
     lastResultTime,
-    requestSession, // ✅ جديد — للـ button (بتحط loading بس)
-    startSession,   // ✅ للـ socket event (بتبدأ الـ session فعلاً)
+    requestSession, 
     endSession,
     selectLevel,
     startAnxietyTest,
@@ -54,14 +50,13 @@ export default function App() {
     endError,
     isLoadingAnxietyTest,
     anxietyTestError,
+    startSession,
   } = useSession(send);
 
-  // ✅ نربط startSession بالـ ref عشان الـ socket callback يشوف النسخة الأحدث
   startSessionRef.current = startSession;
 
   const startLevel = selectedLevel;
 
-  // ✅ الـ button في الـ Sidebar — بيحط loading ويستنى الـ backend يبعت create_session
   function handleStartSession() {
     requestSession();
   }

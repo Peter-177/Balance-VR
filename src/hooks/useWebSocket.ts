@@ -72,3 +72,4 @@ export function useWebSocket(options?: WebSocketOptions) {
 
   return { send };
 }
+

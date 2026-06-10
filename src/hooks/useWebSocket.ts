@@ -48,12 +48,12 @@ export function useWebSocket(options?: WebSocketOptions) {
 
     let updateTestLogged = false;
 
-    socket.onAny((eventName, ...args) => {
+    socket.onAny((eventName) => {
       if (eventName === "update_test") {
         if (updateTestLogged) return;
         updateTestLogged = true;
       }
-      // console.log("[Socket.IO] Event received:", eventName, args); // 🔇 صمتناها عشان الـ Backend بيبعتها كتير
+      // console.log("[Socket.IO] Event received:", eventName); // 🔇 صمتناها عشان الـ Backend بيبعتها كتير
     });
 
     return () => {

@@ -151,21 +151,6 @@ export default function SudsChart({
         </ResponsiveContainer>
       </div>
 
-      <div className="flex gap-2 flex-wrap justify-center mt-4">
-        {buttonsList.map(function (num) {
-          return (
-            <button
-              key={num}
-              onClick={function () {
-                handleButtonClick(num);
-              }}
-              className={getButtonClassName(num)}
-            >
-              {num}
-            </button>
-          );
-        })}
-      </div>
     </div>
   );
 }

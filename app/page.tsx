@@ -27,11 +27,9 @@ export default function App() {
   );
 
   const startSessionRef = useRef<() => void>(() => {});
-  const showGraphRef = useRef<() => void>(() => {});
 
   const { send } = useWebSocket({
     onSessionCreated: () => startSessionRef.current(),
-    onAnxietyTestReceived: () => showGraphRef.current(),
   });
 
   const {
@@ -48,12 +46,12 @@ export default function App() {
 
     isLoadingEnd,
     endError,
-
+    isLoadingAnxietyTest,
+    anxietyTestError,
     startSession,
   } = useSession(send);
 
   startSessionRef.current = startSession;
-  showGraphRef.current = () => setShowGraph(true);
 
   const startLevel = selectedLevel;
 
@@ -118,6 +116,8 @@ export default function App() {
           lastResultTime={lastResultTime}
           onStartTest={handleStartTest}
           onShowGraph={handleToggleGraph}
+          isLoadingTest={isLoadingAnxietyTest}
+          testError={anxietyTestError}
         />
 
         <SessionCard

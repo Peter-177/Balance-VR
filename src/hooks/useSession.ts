@@ -20,6 +20,8 @@ export function useSession(send: SendFn) {
 
   const [isLoadingLevelSelect, setIsLoadingLevelSelect] = useState(false);
   const [levelSelectError, setLevelSelectError] = useState<string | null>(null);
+  const [isLoadingAnxietyTest, setIsLoadingAnxietyTest] = useState(false);
+  const [anxietyTestError, setAnxietyTestError] = useState<string | null>(null);
 
   const startTimeRef = useRef<string | null>(null);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -143,16 +145,32 @@ export function useSession(send: SendFn) {
     }
   }, []);
 
-  const startAnxietyTest = useCallback(() => {
-    const iso = new Date().toISOString();
-    testCreatedAtRef.current = iso;
+  const startAnxietyTest = useCallback(async () => {
+    setIsLoadingAnxietyTest(true);
+    setAnxietyTestError(null);
 
-    console.log("[Anxiety Test] Emitting start_anxiety_test to backend");
+    try {
+      console.log("[Anxiety Test] Sending POST to /demo/anxiety-test...");
 
-    send("start_anxiety_test", {
-      createdAt: iso,
-    });
-  }, [send]);
+      const response = await fetch(`${REST_BASE}/demo/anxiety-test`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ show: true }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Failed to start anxiety test: ${response.status}`);
+      }
+
+      console.log("[Anxiety Test] Success");
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : "Error starting anxiety test";
+      console.error("[REST] Error during anxiety test:", errorMessage);
+      setAnxietyTestError(errorMessage);
+    } finally {
+      setIsLoadingAnxietyTest(false);
+    }
+  }, []);
 
   const submitAnxietyResult = useCallback(
     async (anxietyValue: number) => {
@@ -265,5 +283,7 @@ export function useSession(send: SendFn) {
 
     isLoadingLevelSelect,
     levelSelectError,
+    isLoadingAnxietyTest,
+    anxietyTestError,
   };
 }

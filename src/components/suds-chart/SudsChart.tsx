@@ -10,10 +10,7 @@ import {
   ResponsiveContainer,
 } from "recharts";
 
-
-
 interface SudsChartProps {
-  onSubmitResult?: (anxietyValue: number) => void;
   history?: { test: number; anxiety: number }[];
   activeButton?: number | null;
   onUpdateHistory?: (history: { test: number; anxiety: number }[]) => void;
@@ -39,8 +36,6 @@ export default function SudsChart({
   if (history.length > 1) {
     showActiveDot = true;
   }
-
-
 
   return (
     <div className="flex flex-col items-center gap-4 p-4 w-full h-full text-gray-700">
@@ -96,7 +91,6 @@ export default function SudsChart({
           </LineChart>
         </ResponsiveContainer>
       </div>
-
     </div>
   );
 }

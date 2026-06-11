@@ -10,7 +10,6 @@ export function ViewportPanel({ exposureActive }: ViewportPanelProps) {
       className="absolute left-[380px] top-[85px] w-[1140px] h-[455px] border border-[#1f355a] rounded-sm select-none overflow-hidden"
       style={{ background: 'transparent' }}
     >
-      {/* Header */}
       <div
         className="w-full h-[50px] border-b border-[#1f355a] flex items-center justify-between px-6"
         style={{ background: 'transparent' }}

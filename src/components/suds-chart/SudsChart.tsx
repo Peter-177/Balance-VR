@@ -21,7 +21,6 @@ interface SudsChartProps {
 }
 
 export default function SudsChart({ 
-  onSubmitResult, 
   history: propsHistory, 
   activeButton: propsActiveButton,
   onUpdateHistory,

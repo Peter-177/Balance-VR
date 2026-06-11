@@ -17,8 +17,7 @@ export function useSession(send: SendFn) {
   const [lastResultTime, setLastResultTime] = useState("00:00");
   const [isLoadingEnd, setIsLoadingEnd] = useState(false);
   const [endError, setEndError] = useState<string | null>(null);
-  const [isLoadingAnxietyTest, setIsLoadingAnxietyTest] = useState(false);
-  const [anxietyTestError, setAnxietyTestError] = useState<string | null>(null);
+
   const [isLoadingLevelSelect, setIsLoadingLevelSelect] = useState(false);
   const [levelSelectError, setLevelSelectError] = useState<string | null>(null);
 
@@ -263,8 +262,7 @@ export function useSession(send: SendFn) {
     submitAnxietyResult,
     isLoadingEnd,
     endError,
-    isLoadingAnxietyTest,
-    anxietyTestError,
+
     isLoadingLevelSelect,
     levelSelectError,
   };

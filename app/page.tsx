@@ -48,8 +48,7 @@ export default function App() {
 
     isLoadingEnd,
     endError,
-    isLoadingAnxietyTest,
-    anxietyTestError,
+
     startSession,
   } = useSession(send);
 
@@ -119,8 +118,6 @@ export default function App() {
           lastResultTime={lastResultTime}
           onStartTest={handleStartTest}
           onShowGraph={handleToggleGraph}
-          isLoadingTest={isLoadingAnxietyTest}
-          testError={anxietyTestError}
         />
 
         <SessionCard

@@ -30,6 +30,7 @@ export function useSession(send: SendFn) {
   const lastPolledResultRef = useRef<number | null>(null);
   const isRunningRef = useRef(false);
   const levelSelectInFlightRef = useRef(false);
+  const userHasSelectedLevelRef = useRef(false);
 
 
   const startSession = useCallback(() => {
@@ -94,6 +95,7 @@ export function useSession(send: SendFn) {
       console.error("[REST] Error selecting level:", errorMessage);
       setLevelSelectError(errorMessage);
     } finally {
+      userHasSelectedLevelRef.current = true;
       levelSelectInFlightRef.current = false;
       setIsLoadingLevelSelect(false);
     }
@@ -226,6 +228,7 @@ export function useSession(send: SendFn) {
 
   useEffect(() => {
     if (!isRunning) return;
+    if (!userHasSelectedLevelRef.current) return;
 
     const pollForResults = async () => {
       try {

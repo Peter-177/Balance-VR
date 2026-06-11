@@ -54,8 +54,6 @@ export function useWebSocket(options?: WebSocketOptions) {
       }
     });
 
-
-
     return () => {
       socket.disconnect();
     };

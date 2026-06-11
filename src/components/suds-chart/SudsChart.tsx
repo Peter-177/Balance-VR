@@ -10,10 +10,7 @@ import {
   ResponsiveContainer,
 } from "recharts";
 
-type HistoryEntry = {
-  test: number;
-  anxiety: number;
-};
+
 
 interface SudsChartProps {
   onSubmitResult?: (anxietyValue: number) => void;

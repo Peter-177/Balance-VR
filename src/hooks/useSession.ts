@@ -144,49 +144,15 @@ export function useSession(send: SendFn) {
     }
   }, []);
 
-  const startAnxietyTest = useCallback(async () => {
-    const now = new Date();
-    const iso = now.toISOString();
+  const startAnxietyTest = useCallback(() => {
+    const iso = new Date().toISOString();
     testCreatedAtRef.current = iso;
 
-    setIsLoadingAnxietyTest(true);
-    setAnxietyTestError(null);
+    console.log("[Anxiety Test] Emitting start_anxiety_test to backend");
 
     send("start_anxiety_test", {
       createdAt: iso,
     });
-
-    try {
-      const apiUrl = `${REST_BASE}/demo/anxiety-test`;
-      const requestBody = { show: true };
-
-      console.log("Starting anxiety test");
-      console.log("Sending to /demo/anxiety-test:", requestBody);
-
-      const response = await fetch(apiUrl, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(requestBody),
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to start anxiety test");
-      }
-
-      const data = await response.json();
-      console.log("Anxiety test response status:", response.status);
-      console.log("Anxiety test response body:", data);
-
-      send("anxiety_test_response", data);
-    } catch (err) {
-      const errorMessage =
-        err instanceof Error ? err.message : "Error starting anxiety test";
-      console.error("[REST] Error during anxiety test:", errorMessage);
-      console.error("Error details:", err);
-      setAnxietyTestError(errorMessage);
-    } finally {
-      setIsLoadingAnxietyTest(false);
-    }
   }, [send]);
 
   const submitAnxietyResult = useCallback(

@@ -27,10 +27,11 @@ export default function App() {
   );
 
   const startSessionRef = useRef<() => void>(() => {});
+  const startAnxietyTestRef = useRef<() => void>(() => {});
 
   const { send } = useWebSocket({
-
     onSessionCreated: () => startSessionRef.current(),
+    onAnxietyTestReceived: () => startAnxietyTestRef.current(),
   });
 
   const {
@@ -53,6 +54,7 @@ export default function App() {
   } = useSession(send);
 
   startSessionRef.current = startSession;
+  startAnxietyTestRef.current = startAnxietyTest;
 
   const startLevel = selectedLevel;
 

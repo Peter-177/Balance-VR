@@ -7,6 +7,7 @@ const SERVER_URL = "wss://vr-demo-api-production.up.railway.app";
 
 type WebSocketOptions = {
   onSessionCreated?: () => void;
+  onAnxietyTestReceived?: () => void;
 };
 
 export function useWebSocket(options?: WebSocketOptions) {
@@ -43,6 +44,11 @@ export function useWebSocket(options?: WebSocketOptions) {
 
       
       optionsRef.current?.onSessionCreated?.();
+    });
+
+    socket.on("show_anxiety_test", () => {
+      console.log("[Socket.IO] show_anxiety_test received from backend");
+      optionsRef.current?.onAnxietyTestReceived?.();
     });
 
     let updateTestLogged = false;

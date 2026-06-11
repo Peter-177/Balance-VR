@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import {
   LineChart,
   Line,
@@ -31,53 +30,10 @@ export default function SudsChart({
   onUpdateHistory,
   onUpdateActiveButton
 }: SudsChartProps) {
-  const [localHistory, setLocalHistory] = useState<HistoryEntry[]>([]);
-  const [localActiveButton, setLocalActiveButton] = useState<number | null>(null);
-
-  const history = propsHistory !== undefined ? propsHistory : localHistory;
-  const activeButton = propsActiveButton !== undefined ? propsActiveButton : localActiveButton;
-
-  const setHistory = (newHistory: HistoryEntry[]) => {
-    if (onUpdateHistory) {
-      onUpdateHistory(newHistory);
-    } else {
-      setLocalHistory(newHistory);
-    }
-  };
-
-  const setActiveButton = (value: number | null) => {
-    if (onUpdateActiveButton) {
-      onUpdateActiveButton(value);
-    } else {
-      setLocalActiveButton(value);
-    }
-  };
+  const history = propsHistory !== undefined ? propsHistory : [];
+  const activeButton = propsActiveButton !== undefined ? propsActiveButton : null;
 
   const buttonsList = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
-
-  function handleButtonClick(anxietyValue: number) {
-    let updatedHistory: HistoryEntry[];
-
-    if (history.length === 0) {
-      updatedHistory = [
-        { test: 1, anxiety: 1 },
-        { test: 2, anxiety: anxietyValue },
-      ];
-    } else {
-      updatedHistory = [
-        ...history,
-        { test: history.length + 1, anxiety: anxietyValue },
-      ];
-    }
-
-    setHistory(updatedHistory);
-    setActiveButton(anxietyValue);
-
-    if (onSubmitResult) {
-      onSubmitResult(anxietyValue);
-    }
-  }
-
   let strokeWidthValue = 0;
   if (history.length > 1) {
     strokeWidthValue = 2;
@@ -88,13 +44,7 @@ export default function SudsChart({
     showActiveDot = true;
   }
 
-  function getButtonClassName(num: number) {
-    if (activeButton === num) {
-      return "w-10 h-10 rounded border text-sm font-medium transition-all duration-200 bg-[#e5e7eb] text-gray-800 border-gray-300 shadow-inner";
-    } else {
-      return "w-10 h-10 rounded border text-sm font-medium transition-all duration-200 bg-[#f3f4f6] text-gray-600 border-gray-200 hover:bg-gray-200";
-    }
-  }
+
 
   return (
     <div className="flex flex-col items-center gap-4 p-4 w-full h-full text-gray-700">

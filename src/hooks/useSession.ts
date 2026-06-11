@@ -33,7 +33,6 @@ export function useSession(send: SendFn) {
   const levelSelectInFlightRef = useRef(false);
   const userHasSelectedLevelRef = useRef(false);
 
-
   const startSession = useCallback(() => {
     if (isRunningRef.current) {
       console.log("[Session] Already running — ignoring duplicate create_session");

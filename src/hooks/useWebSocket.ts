@@ -32,17 +32,16 @@ export function useWebSocket(options?: WebSocketOptions) {
       console.warn("[Socket.IO] Connection error:", err.message);
     });
 
-    // لما الطرف التاني يبعت create_session
+  
     socket.on("create_session", () => {
       console.log("[Socket.IO] create_session received from backend");
 
-      // بناخد الـ time من الـ frontend في اللحظة دي
       const now = new Date();
       const hh = now.getHours().toString().padStart(2, "0");
       const mm = now.getMinutes().toString().padStart(2, "0");
       console.log("[Socket.IO] Frontend time:", `${hh}:${mm}`);
 
-      // بنبعت الـ callback للـ component عشان يعدل الـ dashboard
+      
       optionsRef.current?.onSessionCreated?.();
     });
 
@@ -53,7 +52,6 @@ export function useWebSocket(options?: WebSocketOptions) {
         if (updateTestLogged) return;
         updateTestLogged = true;
       }
-      // console.log("[Socket.IO] Event received:", eventName); // 🔇 صمتناها عشان الـ Backend بيبعتها كتير
     });
 
     return () => {

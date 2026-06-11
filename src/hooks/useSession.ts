@@ -15,8 +15,6 @@ export function useSession(send: SendFn) {
   const [attempts, setAttempts] = useState(0);
   const [lastResult, setLastResult] = useState<number>(0);
   const [lastResultTime, setLastResultTime] = useState("00:00");
-  const [isLoadingSession, setIsLoadingSession] = useState(false);
-  const [sessionError, setSessionError] = useState<string | null>(null);
   const [isLoadingEnd, setIsLoadingEnd] = useState(false);
   const [endError, setEndError] = useState<string | null>(null);
   const [isLoadingAnxietyTest, setIsLoadingAnxietyTest] = useState(false);
@@ -33,11 +31,6 @@ export function useSession(send: SendFn) {
   const isRunningRef = useRef(false);
   const levelSelectInFlightRef = useRef(false);
 
-  const requestSession = useCallback(() => {
-    setIsLoadingSession(true);
-    setSessionError(null);
-    console.log("[Session] Waiting for backend to trigger create_session...");
-  }, []);
 
   const startSession = useCallback(() => {
     if (isRunningRef.current) {
@@ -56,8 +49,6 @@ export function useSession(send: SendFn) {
     setIsRunning(true);
     setSeconds(0);
     setAttempts(0);
-    setSessionError(null);
-    setIsLoadingSession(false);
     setEndError(null);
     setSessionStart(`${hh}:${mm}`);
 
@@ -231,7 +222,7 @@ export function useSession(send: SendFn) {
 
   useEffect(() => {
     startSession();
-  }, [startSession]);
+  }, [startSession])
 
   useEffect(() => {
     if (!isRunning) return;
@@ -296,14 +287,11 @@ export function useSession(send: SendFn) {
     attempts,
     lastResult,
     lastResultTime,
-    requestSession, 
     startSession,   
     endSession,
     selectLevel,
     startAnxietyTest,
     submitAnxietyResult,
-    isLoadingSession,
-    sessionError,
     isLoadingEnd,
     endError,
     isLoadingAnxietyTest,

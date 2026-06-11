@@ -3,8 +3,6 @@ interface SessionCardProps {
   startLevel: number;
   attempts: number;
   seconds: number;
-  isLoadingSession: boolean;
-  sessionError: string | null;
   isLoadingEnd: boolean;
   endError: string | null;
 }
@@ -14,8 +12,6 @@ export function SessionCard({
   startLevel,
   attempts,
   seconds,
-  isLoadingSession,
-  sessionError,
   isLoadingEnd,
   endError,
 }: SessionCardProps) {
@@ -47,13 +43,7 @@ export function SessionCard({
           <div className="flex justify-between items-center">
             <span className="text-[#a0b8d8]">Session Start</span>
             <span className="text-white font-bold text-right text-[14px]">
-              {isLoadingSession ? (
-                <span className="text-yellow-400">Loading...</span>
-              ) : sessionError ? (
-                <span className="text-red-400" title={sessionError}>Error</span>
-              ) : (
-                sessionStart
-              )}
+              {sessionStart}
             </span>
           </div>
           <div className="flex justify-between items-center">

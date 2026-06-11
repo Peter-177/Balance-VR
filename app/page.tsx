@@ -39,13 +39,12 @@ export default function App() {
     attempts,
     lastResult,
     lastResultTime,
-    requestSession, 
+
     endSession,
     selectLevel,
     startAnxietyTest,
     submitAnxietyResult,
-    isLoadingSession,
-    sessionError,
+
     isLoadingEnd,
     endError,
     isLoadingAnxietyTest,
@@ -58,7 +57,7 @@ export default function App() {
   const startLevel = selectedLevel;
 
   function handleStartSession() {
-    requestSession();
+    // Session is started automatically via socket event
   }
 
   function handleEndSession() {
@@ -127,8 +126,7 @@ export default function App() {
           startLevel={startLevel}
           attempts={attempts}
           seconds={seconds}
-          isLoadingSession={isLoadingSession}
-          sessionError={sessionError}
+
           isLoadingEnd={isLoadingEnd}
           endError={endError}
         />

@@ -11,6 +11,7 @@ import {
 } from "recharts";
 
 interface SudsChartProps {
+  onSubmitResult?: (anxietyValue: number) => void;
   history?: { test: number; anxiety: number }[];
   activeButton?: number | null;
   onUpdateHistory?: (history: { test: number; anxiety: number }[]) => void;

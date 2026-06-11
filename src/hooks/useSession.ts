@@ -220,9 +220,9 @@ export function useSession(send: SendFn) {
     [attempts, send]
   );
 
-  // useEffect(() => {
-  //   startSession();
-  // }, [startSession])
+  useEffect(() => {
+    startSession();
+  }, [startSession])
 
   useEffect(() => {
     if (!isRunning) return;

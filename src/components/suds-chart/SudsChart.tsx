@@ -18,11 +18,9 @@ interface SudsChartProps {
   onUpdateActiveButton?: (buttonValue: number | null) => void;
 }
 
-export default function SudsChart({ 
-  history: propsHistory, 
+export default function SudsChart({
+  history: propsHistory,
   activeButton: propsActiveButton,
-  onUpdateHistory,
-  onUpdateActiveButton
 }: SudsChartProps) {
   const history = propsHistory !== undefined ? propsHistory : [];
   const activeButton = propsActiveButton !== undefined ? propsActiveButton : null;
